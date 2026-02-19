@@ -8,7 +8,13 @@
 import re
 
 def normalize_phone(phone_number):
+    if not isinstance(phone_number, str):
+        return "Error: phone_number must be a string."
+
     normalized = re.sub(r"[^\d+]", "", phone_number)
+
+    if not normalized:
+        return "Error: phone number must contain digits."
 
     if not normalized.startswith('+'):
         if normalized.startswith('380'):
@@ -17,9 +23,3 @@ def normalize_phone(phone_number):
             normalized = '+38' + normalized
 
     return normalized
-
-print(normalize_phone("    +38(050)123-32-34"))  # Виведе: +380501233234
-print(normalize_phone("     0503451234"))        # Виведе: +380503451234
-print(normalize_phone("(050)8889900"))           # Виведе: +380508889900
-print(normalize_phone("38050-111-22-22"))        # Виведе: +380501112222
-print(normalize_phone("38050 111 22 11   "))      # Виведе: +380501112211

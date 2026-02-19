@@ -15,11 +15,27 @@ from datetime import datetime, timedelta
 
 
 def get_upcoming_birthdays(users):
+    if not isinstance(users, list):
+        return "Error: users must be a list of dictionaries."
+
     today = datetime.today().date()
     upcoming_birthdays = []
 
     for user in users:
-        birthday = datetime.strptime(user["birthday"], "%Y.%m.%d").date()
+        if not isinstance(user, dict):
+            return "Error: each user must be a dictionary with 'name' and 'birthday'."
+
+        name = user.get("name")
+        birthday_str = user.get("birthday")
+
+        if not isinstance(name, str) or not isinstance(birthday_str, str):
+            return "Error: each user must contain string fields 'name' and 'birthday'."
+
+        try:
+            birthday = datetime.strptime(birthday_str, "%Y.%m.%d").date()
+        except ValueError:
+            return "Error: birthday must be in YYYY.MM.DD format."
+
         birthday_this_year = birthday.replace(year=today.year)
 
         if birthday_this_year < today:
@@ -34,20 +50,8 @@ def get_upcoming_birthdays(users):
                 congratulation_date = birthday_this_year
 
             upcoming_birthdays.append({
-                "name": user["name"],
+                "name": name,
                 "congratulation_date": congratulation_date.strftime("%Y.%m.%d")
             })
             
     return upcoming_birthdays
-
-
-# test
-users = [
-    {"name": "Alice", "birthday": "1990.02.19"},
-    {"name": "Bob", "birthday": "1985.10.08"},
-    {"name": "Charlie", "birthday": "1992.10.09"},
-    {"name": "David", "birthday": "1988.10.10"},
-    {"name": "Eve", "birthday": "1995.10.11"}
-
-]
-print(get_upcoming_birthdays(users))
